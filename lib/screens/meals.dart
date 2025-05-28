@@ -1,3 +1,4 @@
+import 'package:chakula_time/widgets/meal_item.dart';
 import 'package:flutter/material.dart';
 import 'package:chakula_time/models/meal.dart';
 
@@ -19,7 +20,7 @@ class MealsScreen extends StatelessWidget {
     Widget content = ListView.builder(
       itemCount: meals.length,
       itemBuilder: (context, index) {
-        return Text(meals[index].title);
+        return MealItem(meal: meals[index]);
       },
     );
 
