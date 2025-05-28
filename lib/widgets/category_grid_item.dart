@@ -4,16 +4,22 @@ import 'package:chakula_time/models/category.dart';
 
 
 class CategoryGridItem extends StatelessWidget {
-  const CategoryGridItem({super.key, required this.category});
+  const CategoryGridItem({
+    super.key,
+    required this.category,
+    required this.onSelectCategory,
+  });
 
   final Category category;
+  final void Function(BuildContext context, Category category) onSelectCategory;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap:() {
-        
+      onTap: () {
+        onSelectCategory(context, category);
       },
+      
       splashColor: Theme.of(context).primaryColor,
       borderRadius: BorderRadius.circular(16),
 

@@ -1,9 +1,22 @@
+import 'package:chakula_time/models/category.dart';
+import 'package:chakula_time/screens/meals.dart';
 import 'package:flutter/material.dart';
 import 'package:chakula_time/data/dummy_data.dart';
 import 'package:chakula_time/widgets/category_grid_item.dart';
 
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({super.key});
+
+  void _selectCategory(BuildContext context, Category category) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (ctx) {
+        return MealsScreen(
+          meals: dummyMeals.where((meal) => meal.categories.contains(category.id)).toList(),
+          title: category.title,
+        );
+      }),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +35,10 @@ class CategoriesScreen extends StatelessWidget {
         children: [
           // ignore: avoid_redundant_argument_values
           for (final category in availableCategories)
-            CategoryGridItem(category: category),
+            CategoryGridItem(
+              category: category, 
+              onSelectCategory: _selectCategory
+            ),
         ],
       ),
 

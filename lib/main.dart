@@ -23,6 +23,10 @@ class App extends StatelessWidget {
     return MaterialApp(
       theme: theme,
       home: CategoriesScreen(),
+      // home: MealsScreen(
+      //   title: 'Some Category...',
+      //   meals: dummyMeals, 
+      // ),
     );
   }
 }
