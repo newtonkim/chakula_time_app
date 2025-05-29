@@ -1,6 +1,6 @@
-import 'package:chakula_time/models/category.dart';
-import 'package:chakula_time/screens/meals.dart';
 import 'package:flutter/material.dart';
+import 'package:chakula_time/screens/meals.dart';
+import 'package:chakula_time/models/category.dart';
 import 'package:chakula_time/data/dummy_data.dart';
 import 'package:chakula_time/widgets/category_grid_item.dart';
 
