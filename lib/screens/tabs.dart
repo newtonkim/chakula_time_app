@@ -1,3 +1,4 @@
+import 'package:chakula_time/models/meal.dart';
 import 'package:chakula_time/screens/categories.dart';
 import 'package:chakula_time/screens/meals.dart';
 import 'package:flutter/material.dart';
@@ -10,22 +11,38 @@ class TabScreen extends StatefulWidget {
 }
 
 class _TabScreenState extends State<TabScreen> {
-
   int _selectedPageIndex = 0;
+  final List<Meal> favoriteMeals = [];
+
+    // add or remove a meal from the favorites list
+  void _toggleMealFavoriteStatus(Meal meal) {
+      final isExisting = favoriteMeals.contains(meal);
+      if (isExisting) {
+        setState(() {
+          favoriteMeals.remove(meal);
+        });
+      } else {
+        setState(() {
+          favoriteMeals.add(meal);
+        });
+      }
+  }
 
   void _selectPage(int index) {
     setState(() {
       _selectedPageIndex = index;
     });
   }
+
+
   @override
   Widget build(BuildContext context) {
 
-    Widget activePage = CategoriesScreen();
+    Widget activePage = CategoriesScreen(onToggleFavorite: _toggleMealFavoriteStatus);
     var activePageTitle = 'Categories';
 
     if (_selectedPageIndex == 1) {
-      activePage = const MealsScreen(meals: []);
+      activePage = MealsScreen(meals: [], onToggleFavorite: _toggleMealFavoriteStatus);
       activePageTitle = 'Your Favorites';
     }
     return Scaffold(

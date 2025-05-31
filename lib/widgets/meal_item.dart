@@ -5,9 +5,15 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:chakula_time/widgets/meal_item_trait.dart';
 
 class MealItem extends StatelessWidget {
-  const MealItem({super.key, required this.meal});
+  const MealItem(
+    {
+      super.key, 
+      required this.meal,
+      required this.onToggleFavorite
+    });
 
   final Meal meal;
+  final void Function(Meal meal) onToggleFavorite;
 
   String get complexityText {
     return meal.complexity.name[0].toUpperCase() +
@@ -25,6 +31,7 @@ class MealItem extends StatelessWidget {
       MaterialPageRoute(builder: (ctx) {
         return MealDetailedScreen(
           meal: meal,
+          onToggleFavorite: onToggleFavorite
         );
       }),
     );

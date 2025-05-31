@@ -7,7 +7,7 @@ class MealsScreen extends StatelessWidget {
     {
       super.key, 
       this.title, 
-      required this.meals
+      required this.meals, required void Function(Meal meal) onToggleFavorite
     }
   );
 

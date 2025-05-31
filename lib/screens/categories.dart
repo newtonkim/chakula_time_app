@@ -1,3 +1,4 @@
+import 'package:chakula_time/models/meal.dart';
 import 'package:flutter/material.dart';
 import 'package:chakula_time/screens/meals.dart';
 import 'package:chakula_time/models/category.dart';
@@ -5,7 +6,14 @@ import 'package:chakula_time/data/dummy_data.dart';
 import 'package:chakula_time/widgets/category_grid_item.dart';
 
 class CategoriesScreen extends StatelessWidget {
-  const CategoriesScreen({super.key});
+  const CategoriesScreen(
+    {
+      super.key,
+      required this.onToggleFavorite,
+    }
+  );
+
+  final void Function(Meal meal) onToggleFavorite;
 
   void _selectCategory(BuildContext context, Category category) {
     Navigator.of(context).push(
@@ -13,6 +21,7 @@ class CategoriesScreen extends StatelessWidget {
         return MealsScreen(
           meals: dummyMeals.where((meal) => meal.categories.contains(category.id)).toList(),
           title: category.title,
+          onToggleFavorite: onToggleFavorite
         );
       }),
     );
