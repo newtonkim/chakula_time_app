@@ -1,6 +1,7 @@
 import 'package:chakula_time/models/meal.dart';
 import 'package:chakula_time/screens/categories.dart';
 import 'package:chakula_time/screens/meals.dart';
+import 'package:chakula_time/widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
 
 class TabScreen extends StatefulWidget {
@@ -64,6 +65,7 @@ class _TabScreenState extends State<TabScreen> {
       appBar: AppBar(
         title:  Text(activePageTitle),
       ),
+      drawer: MainDrawer(),
       body: activePage,
 
       bottomNavigationBar: BottomNavigationBar(
