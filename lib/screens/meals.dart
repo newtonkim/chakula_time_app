@@ -5,22 +5,23 @@ import 'package:chakula_time/models/meal.dart';
 class MealsScreen extends StatelessWidget {
   const MealsScreen(
     {
-      super.key, 
-      this.title, 
-      required this.meals, required void Function(Meal meal) onToggleFavorite
+      super.key,
+      this.title,
+      required this.meals,
+      required this.onToggleFavorite,
     }
   );
 
   final String? title;
-
   final List<Meal> meals;
+  final void Function(Meal meal) onToggleFavorite;
 
   @override
   Widget build(context) {
     Widget content = ListView.builder(
       itemCount: meals.length,
       itemBuilder: (context, index) {
-        return MealItem(meal: meals[index]);
+        return MealItem(meal: meals[index], onToggleFavorite: onToggleFavorite);
       },
     );
 
