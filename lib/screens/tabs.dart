@@ -1,11 +1,12 @@
-import 'package:chakula_time/models/meal.dart';
-import 'package:chakula_time/screens/categories.dart';
-import 'package:chakula_time/screens/filters.dart' show Filter; // Import Filter enum
-import 'package:chakula_time/screens/filters.dart'; // Full import for FilterScreen
-import 'package:chakula_time/screens/meals.dart';
-import 'package:chakula_time/widgets/main_drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:chakula_time/data/dummy_data.dart'; // Import dummyMeals
+import 'package:chakula_time/models/meal.dart';
+import 'package:chakula_time/screens/meals.dart';
+import 'package:chakula_time/screens/filters.dart';
+import 'package:chakula_time/screens/categories.dart';
+import 'package:chakula_time/widgets/main_drawer.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chakula_time/providers/meals_provider.dart';
+
 
 // Default filter settings
 const kInitialFilters = {
@@ -15,14 +16,14 @@ const kInitialFilters = {
   Filter.vegetarian: false,
 };
 
-class TabScreen extends StatefulWidget {
+class TabScreen extends ConsumerStatefulWidget {
   const TabScreen({super.key});
 
   @override
-  State<TabScreen> createState() => _TabScreenState();
+  ConsumerState<TabScreen> createState() => _TabScreenState();
 }
 
-class _TabScreenState extends State<TabScreen> {
+class _TabScreenState extends ConsumerState<TabScreen> {
   int _selectedPageIndex = 0;
   final List<Meal> _favoriteMeals = [];
   Map<Filter, bool> _activeFilters = kInitialFilters;
@@ -42,8 +43,7 @@ class _TabScreenState extends State<TabScreen> {
         _activeFilters = result ?? _activeFilters; // Use returned filters or keep old ones if null
       });
     }
-    // Note: If 'meals' identifier was used to navigate to a general meals list,
-    // it's handled by the bottom navigation bar. Drawer only handles 'filters' for now.
+   
   }
 
   void _showInfoMessage(String message) {
@@ -76,10 +76,9 @@ class _TabScreenState extends State<TabScreen> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Apply active filters to the dummyMeals list
-    final availableMeals = dummyMeals.where((meal) {
+  // Helper method to filter meals
+  List<Meal> _filterMeals(List<Meal> meals) {
+    return meals.where((meal) {
       if (_activeFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
         return false;
       }
@@ -94,6 +93,12 @@ class _TabScreenState extends State<TabScreen> {
       }
       return true;
     }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final allMeals = ref.watch(mealsProvider);
+    final availableMeals = _filterMeals(allMeals);
 
     Widget activePage;
     var activePageTitle = 'Categories';
@@ -105,22 +110,7 @@ class _TabScreenState extends State<TabScreen> {
       );
       activePageTitle = 'Categories';
     } else {
-      // Filter favorite meals based on active filters as well
-      final filteredFavoriteMeals = _favoriteMeals.where((meal) {
-        if (_activeFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
-          return false;
-        }
-        if (_activeFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
-          return false;
-        }
-        if (_activeFilters[Filter.vegan]! && !meal.isVegan) {
-          return false;
-        }
-        if (_activeFilters[Filter.vegetarian]! && !meal.isVegetarian) {
-          return false;
-        }
-        return true;
-      }).toList();
+      final filteredFavoriteMeals = _filterMeals(_favoriteMeals);
       activePage = MealsScreen(
         meals: filteredFavoriteMeals, // Pass filtered favorite meals
         onToggleFavorite: _toggleMealFavoriteStatus,
