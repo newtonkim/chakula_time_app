@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:chakula_time/providers/filters_provider.dart';
 
-// Enum to represent the different filters for better type safety and readability
-enum Filter {
-  glutenFree,
-  lactoseFree,
-  vegan,
-  vegetarian,
-}
 
-class FilterScreen extends StatefulWidget {
+
+class FilterScreen extends ConsumerStatefulWidget {
   const FilterScreen({super.key, required this.currentFilters});
 
-  // Stores the filter values that were active when this screen was opened.
-  final Map<Filter, bool> currentFilters;
+
+
 
   @override
-  State<FilterScreen> createState() => _FilterScreenState();
+  ConsumerState<FilterScreen> createState() => _FilterScreenState();
 }
 
-class _FilterScreenState extends State<FilterScreen> {
+class _FilterScreenState extends ConsumerState<FilterScreen> {
+ 
   var _glutenFreeFilter = false;
   var _lactoseFreeFilter = false;
   var _veganFreeFilter = false;
@@ -27,11 +24,11 @@ class _FilterScreenState extends State<FilterScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize filter states from the currentFilters passed to the widget
-    _glutenFreeFilter = widget.currentFilters[Filter.glutenFree] ?? false;
-    _lactoseFreeFilter = widget.currentFilters[Filter.lactoseFree] ?? false;
-    _veganFreeFilter = widget.currentFilters[Filter.vegan] ?? false;
-    _vegetarianFreeFilter = widget.currentFilters[Filter.vegetarian] ?? false;
+     final activeFilter = ref.read(filterProvider);
+      _glutenFreeFilter = activeFilter[Filter.glutenFree] ?? false;
+      _lactoseFreeFilter = activeFilter[Filter.lactoseFree] ?? false;
+      _veganFreeFilter = activeFilter[Filter.vegan] ?? false;
+      _vegetarianFreeFilter = activeFilter[Filter.vegetarian] ?? false;
   }
 
   @override
@@ -51,8 +48,7 @@ class _FilterScreenState extends State<FilterScreen> {
           // there's another pop mechanism at play that bypasses this PopScope's control.
           return;
         }
-        // A pop attempt was made (e.g., user pressed the back button).
-        // We now explicitly pop the current route and pass the filter data as a result.
+       ref.watch(filtersProvider.notifier).setFilter(filter, isActive);
         Navigator.of(context).pop({
           Filter.glutenFree: _glutenFreeFilter,
           Filter.lactoseFree: _lactoseFreeFilter,

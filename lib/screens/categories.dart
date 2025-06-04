@@ -8,11 +8,11 @@ import 'package:chakula_time/widgets/category_grid_item.dart';
 class CategoriesScreen extends StatelessWidget {
   const CategoriesScreen({
     super.key,
-    required this.onToggleFavorite,
+  
     required this.availableMeals, // Add availableMeals to constructor
   });
 
-  final void Function(Meal meal) onToggleFavorite;
+ 
   final List<Meal> availableMeals; // Declare availableMeals field
 
   void _selectCategory(BuildContext context, Category category) {
@@ -26,7 +26,8 @@ class CategoriesScreen extends StatelessWidget {
         return MealsScreen(
             meals: categoryMeals, // Pass the doubly filtered list
             title: category.title,
-            onToggleFavorite: onToggleFavorite);
+        );
+           
       }),
     );
   }

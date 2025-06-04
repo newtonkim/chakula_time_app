@@ -6,6 +6,8 @@ import 'package:chakula_time/screens/categories.dart';
 import 'package:chakula_time/widgets/main_drawer.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chakula_time/providers/meals_provider.dart';
+import 'package:chakula_time/providers/favorites_provider.dart';
+import 'package:chakula_time/providers/filters_provider.dart';
 
 
 // Default filter settings
@@ -25,7 +27,6 @@ class TabScreen extends ConsumerStatefulWidget {
 
 class _TabScreenState extends ConsumerState<TabScreen> {
   int _selectedPageIndex = 0;
-  final List<Meal> _favoriteMeals = [];
   Map<Filter, bool> _activeFilters = kInitialFilters;
 
   // Handles navigation from the drawer, especially to the FilterScreen
@@ -44,29 +45,6 @@ class _TabScreenState extends ConsumerState<TabScreen> {
       });
     }
    
-  }
-
-  void _showInfoMessage(String message) {
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  // Toggles a meal's favorite status
-  void _toggleMealFavoriteStatus(Meal meal) {
-    final isExisting = _favoriteMeals.contains(meal);
-    if (isExisting) {
-      setState(() {
-        _favoriteMeals.remove(meal);
-        _showInfoMessage('Removed from favorites');
-      });
-    } else {
-      setState(() {
-        _favoriteMeals.add(meal);
-        _showInfoMessage('Marked as a favorite');
-      });
-    }
   }
 
   // Handles bottom navigation tap
@@ -105,15 +83,16 @@ class _TabScreenState extends ConsumerState<TabScreen> {
 
     if (_selectedPageIndex == 0) {
       activePage = CategoriesScreen(
-        onToggleFavorite: _toggleMealFavoriteStatus,
+       
         availableMeals: availableMeals, // Pass filtered meals to CategoriesScreen
       );
       activePageTitle = 'Categories';
     } else {
-      final filteredFavoriteMeals = _filterMeals(_favoriteMeals);
+      final favoriteMeals =  ref.watch(favoriteMealsProvider);
+      // final filteredFavoriteMeals = _filterMeals(_favoriteMeals);
       activePage = MealsScreen(
-        meals: filteredFavoriteMeals, // Pass filtered favorite meals
-        onToggleFavorite: _toggleMealFavoriteStatus,
+        meals: favoriteMeals, // Pass filtered favorite meals
+      
       );
       activePageTitle = 'Your Favorites';
     }
