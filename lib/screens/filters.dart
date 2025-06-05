@@ -2,72 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:chakula_time/providers/filters_provider.dart';
 
-
-
-class FilterScreen extends ConsumerStatefulWidget {
-  const FilterScreen({super.key, required this.currentFilters});
-
-
-
+class FilterScreen extends ConsumerWidget {
+  const FilterScreen({super.key});
 
   @override
-  ConsumerState<FilterScreen> createState() => _FilterScreenState();
-}
-
-class _FilterScreenState extends ConsumerState<FilterScreen> {
- 
-  var _glutenFreeFilter = false;
-  var _lactoseFreeFilter = false;
-  var _veganFreeFilter = false;
-  var _vegetarianFreeFilter = false;
-
-  @override
-  void initState() {
-    super.initState();
-     final activeFilter = ref.read(filterProvider);
-      _glutenFreeFilter = activeFilter[Filter.glutenFree] ?? false;
-      _lactoseFreeFilter = activeFilter[Filter.lactoseFree] ?? false;
-      _veganFreeFilter = activeFilter[Filter.vegan] ?? false;
-      _vegetarianFreeFilter = activeFilter[Filter.vegetarian] ?? false;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // PopScope is used to handle back navigation and return selected filter data.
-    // canPop is set to false to intercept the pop event.
-    // onPopInvoked is called when a pop is attempted. If didPop is false (meaning
-    // the pop was intercepted), we manually pop the navigator and pass back the
-    // current filter states.
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (bool didPop) {
-        if (didPop) {
-          // This condition is true if the pop event was not intercepted and completed.
-          // For example, if canPop were true or if Navigator.pop was called elsewhere.
-          // In our case with canPop: false, this block is unlikely to be hit unless
-          // there's another pop mechanism at play that bypasses this PopScope's control.
-          return;
-        }
-       ref.watch(filtersProvider.notifier).setFilter(filter, isActive);
-        Navigator.of(context).pop({
-          Filter.glutenFree: _glutenFreeFilter,
-          Filter.lactoseFree: _lactoseFreeFilter,
-          Filter.vegan: _veganFreeFilter,
-          Filter.vegetarian: _vegetarianFreeFilter,
-        });
-      },
-      child: Scaffold(
+  Widget build(BuildContext context, WidgetRef ref) {
+      final activeFilters =  ref.watch(filterProvider);
+    return Scaffold(
         appBar: AppBar(
           title: const Text('Your Filters'),
         ),
         body: Column(
           children: [
             SwitchListTile(
-              value: _glutenFreeFilter,
+              value: activeFilters[Filter.glutenFree]!,
               onChanged: (isChecked) {
-                setState(() {
-                  _glutenFreeFilter = isChecked;
-                });
+                ref
+                    .read(filterProvider.notifier)
+                    .setFilter(Filter.glutenFree, isChecked);
               },
               title: Text(
                 'Gluten-free',
@@ -87,11 +39,11 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
               contentPadding: const EdgeInsets.only(left: 34, right: 22),
             ),
             SwitchListTile(
-              value: _lactoseFreeFilter,
+              value: activeFilters[Filter.lactoseFree]!,
               onChanged: (isChecked) {
-                setState(() {
-                  _lactoseFreeFilter = isChecked;
-                });
+                ref
+                    .read(filterProvider.notifier)
+                    .setFilter(Filter.lactoseFree, isChecked);
               },
               title: Text(
                 'Lactose-free',
@@ -101,7 +53,7 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
                     ),
               ),
               subtitle: Text(
-                'Only includes Lactose-free meals.',
+                'Only includes lactose-free meals.',
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       // ignore: deprecated_member_use
                       color: Theme.of(context).colorScheme.onBackground,
@@ -111,21 +63,21 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
               contentPadding: const EdgeInsets.only(left: 34, right: 22),
             ),
             SwitchListTile(
-              value: _veganFreeFilter,
+              value: activeFilters[Filter.vegan]!,
               onChanged: (isChecked) {
-                setState(() {
-                  _veganFreeFilter = isChecked;
-                });
+                ref
+                    .read(filterProvider.notifier)
+                    .setFilter(Filter.vegan, isChecked);
               },
               title: Text(
-                'Vegan-free', // Note: "Vegan-free" usually means "contains no vegan ingredients". If the intent is "is Vegan", the label should be "Vegan".
+                'Vegan', 
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       // ignore: deprecated_member_use
                       color: Theme.of(context).colorScheme.onBackground,
                     ),
               ),
               subtitle: Text(
-                'Only includes vegan-free meals.',
+                'Only includes vegan meals.', 
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       // ignore: deprecated_member_use
                       color: Theme.of(context).colorScheme.onBackground,
@@ -135,21 +87,21 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
               contentPadding: const EdgeInsets.only(left: 34, right: 22),
             ),
             SwitchListTile(
-              value: _vegetarianFreeFilter,
+              value: activeFilters[Filter.vegetarian]!,
               onChanged: (isChecked) {
-                setState(() {
-                  _vegetarianFreeFilter = isChecked;
-                });
+                ref
+                    .read(filterProvider.notifier)
+                    .setFilter(Filter.vegetarian, isChecked);
               },
               title: Text(
-                'Vegetarian-free', // Note: Similar to "Vegan-free", this label might be confusing.
+                'Vegetarian', 
                 style: Theme.of(context).textTheme.titleLarge!.copyWith(
                       // ignore: deprecated_member_use
                       color: Theme.of(context).colorScheme.onBackground,
                     ),
               ),
               subtitle: Text(
-                'Only includes Vegetarian-free meals.',
+                'Only includes vegetarian meals.', 
                 style: Theme.of(context).textTheme.labelMedium!.copyWith(
                       // ignore: deprecated_member_use
                       color: Theme.of(context).colorScheme.onBackground,
@@ -160,7 +112,6 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
             ),
           ],
         ),
-      ),
     );
   }
 }

@@ -10,13 +10,7 @@ import 'package:chakula_time/providers/favorites_provider.dart';
 import 'package:chakula_time/providers/filters_provider.dart';
 
 
-// Default filter settings
-const kInitialFilters = {
-  Filter.glutenFree: false,
-  Filter.lactoseFree: false,
-  Filter.vegan: false,
-  Filter.vegetarian: false,
-};
+// Default filter settings (kInitialFilters removed as filters are now managed by filterProvider)
 
 class TabScreen extends ConsumerStatefulWidget {
   const TabScreen({super.key});
@@ -27,22 +21,20 @@ class TabScreen extends ConsumerStatefulWidget {
 
 class _TabScreenState extends ConsumerState<TabScreen> {
   int _selectedPageIndex = 0;
-  Map<Filter, bool> _activeFilters = kInitialFilters;
+  // Map<Filter, bool> _activeFilters = kInitialFilters; // Removed: Filters now read from filterProvider
 
   // Handles navigation from the drawer, especially to the FilterScreen
-  void _setScreen(String identifier) async { // Make async to await result from FilterScreen
+  void _setScreen(String identifier) {
     Navigator.of(context).pop(); // Close the drawer first
     if (identifier == 'filters') {
-      // Navigate to FilterScreen and await the returned map of filters
-      final result = await Navigator.of(context).push<Map<Filter, bool>>(
+      // Navigate to FilterScreen. It will manage its state via filterProvider.
+      Navigator.of(context).push<Map<Filter, bool>>( // Return type <Map<Filter, bool>> might no longer be relevant
         MaterialPageRoute(
-          builder: (ctx) => FilterScreen(currentFilters: _activeFilters),
+          builder: (ctx) => const FilterScreen(), // Removed currentFilters
         ),
       );
-      // Update the active filters if result is not null
-      setState(() {
-        _activeFilters = result ?? _activeFilters; // Use returned filters or keep old ones if null
-      });
+      // setState for _activeFilters is no longer needed here as FilterScreen updates the provider directly.
+      // The TabScreen will rebuild if it's watching the filterProvider and it changes.
     }
    
   }
@@ -55,18 +47,18 @@ class _TabScreenState extends ConsumerState<TabScreen> {
   }
 
   // Helper method to filter meals
-  List<Meal> _filterMeals(List<Meal> meals) {
+  List<Meal> _filterMeals(List<Meal> meals, Map<Filter, bool> activeFilters) {
     return meals.where((meal) {
-      if (_activeFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
+      if (activeFilters[Filter.glutenFree]! && !meal.isGlutenFree) {
         return false;
       }
-      if (_activeFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
+      if (activeFilters[Filter.lactoseFree]! && !meal.isLactoseFree) {
         return false;
       }
-      if (_activeFilters[Filter.vegan]! && !meal.isVegan) {
+      if (activeFilters[Filter.vegan]! && !meal.isVegan) {
         return false;
       }
-      if (_activeFilters[Filter.vegetarian]! && !meal.isVegetarian) {
+      if (activeFilters[Filter.vegetarian]! && !meal.isVegetarian) {
         return false;
       }
       return true;
@@ -76,7 +68,8 @@ class _TabScreenState extends ConsumerState<TabScreen> {
   @override
   Widget build(BuildContext context) {
     final allMeals = ref.watch(mealsProvider);
-    final availableMeals = _filterMeals(allMeals);
+    final activeFilters = ref.watch(filterProvider); // Watch the filters
+    final availableMeals = _filterMeals(allMeals, activeFilters);
 
     Widget activePage;
     var activePageTitle = 'Categories';

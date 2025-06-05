@@ -27,12 +27,14 @@ class MealItem extends StatelessWidget {
 
   void _selectMealDetails(BuildContext context) {
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (ctx) {
-        return MealDetailedScreen(
-          meal: meal,
-        
-        );
-      }),
+      MaterialPageRoute<void>( // Explicitly typed MaterialPageRoute for clarity
+        builder: (BuildContext ctx) { // Explicitly type the context
+          final Widget screen = MealDetailedScreen( // Explicitly type the screen widget
+            meal: meal,
+          );
+          return screen;
+        },
+      ),
     );
   }
 
